@@ -1,66 +1,88 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meme Collection | WJJ</title>
+    <title>Meme & Wallpaper | WJJ</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="https://blog.wjjblog.ccwu.cc/favicon.svg">
 </head>
 <body>
     <header>
-        <h1>Meme Collection</h1>
-        <p class="subtitle">WJJ 的表情包收集地</p>
-        <a href="https://wjjblog.ccwu.cc" class="back-link">← 返回主站</a>
+        <h1>Meme & Wallpaper</h1>
+        <p class="subtitle">WJJ 鐨勮〃鎯呭寘涓庡绾告敹闆嗗湴</p>
+        <a href="https://wjjblog.ccwu.cc" class="back-link">鈫?杩斿洖涓荤珯</a>
     </header>
 
     <div class="filters">
-        <button class="filter-btn active" data-filter="all">全部</button>
-        <button class="filter-btn" data-filter="static">静态</button>
-        <button class="filter-btn" data-filter="gif">动图</button>
+        <button class="filter-btn active" data-category="all">鍏ㄩ儴</button>
+        <button class="filter-btn" data-category="wallpaper">澹佺焊</button>
+        <button class="filter-btn" data-category="meme">琛ㄦ儏鍖?/button>
     </div>
 
-    <div class="masonry" id="gallery">
-        <!-- 添加表情包格式：
-        静态图: <div class="item" data-type="static"><img src="images/文件.jpg" alt="描述"><a href="images/文件.jpg" download class="download-btn">下载</a></div>
-        动图: <div class="item" data-type="gif"><img src="images/文件.gif" alt="描述"><a href="images/文件.gif" download class="download-btn">下载</a></div>
-        -->
-        <div class="item" data-type="static">
-            <img src="images/meme1.jpg" alt="表情包1">
-            <a href="images/meme1.jpg" download class="download-btn">下载</a>
-        </div>
-        <div class="item" data-type="static">
-            <img src="images/meme2.jpg" alt="表情包2">
-            <a href="images/meme2.jpg" download class="download-btn">下载</a>
-        </div>
-        <div class="item" data-type="static">
-            <img src="images/meme3.jpg" alt="表情包3">
-            <a href="images/meme3.jpg" download class="download-btn">下载</a>
-        </div>
-    </div>
+    <div class="masonry" id="gallery"></div>
 
     <footer>
-        <p>Total: <span id="count">0</span> memes</p>
+        <p>Total: <span id="count">0</span> items</p>
     </footer>
 
     <script>
-        document.getElementById('count').textContent = 
-            document.querySelectorAll('.item img').length;
+        const gallery = document.getElementById('gallery');
+        const countEl = document.getElementById('count');
 
-        document.querySelectorAll('.filter-btn').forEach(btn => {
+        // 澹佺焊鏂囦欢鍒楄〃锛堣嚜鍔ㄧ敓鎴愶級
+        const wallpaperFiles = [
+            '04hpvuw2y4clqm9463-170433763153913.png',
+            '05g2ejrv73l3xqphci-16872321380338.jpg',
+            // ... 762 files total
+        ];
+
+        // 琛ㄦ儏鍖呮枃浠跺垪琛?        const memeFiles = [
+            // 娣诲姞琛ㄦ儏鍖呮枃浠跺悕
+        ];
+
+        function createItem(src, category) {
+            const div = document.createElement('div');
+            div.className = 'item';
+            div.dataset.category = category;
+            div.innerHTML = `
+                <img src="${src}" alt="${category}" loading="lazy">
+                <a href="${src}" download class="download-btn">涓嬭浇</a>
+            `;
+            return div;
+        }
+
+        function renderGallery(filter = 'all') {
+            gallery.innerHTML = '';
+            let count = 0;
+
+            if (filter === 'all' || filter === 'wallpaper') {
+                wallpaperFiles.forEach(file => {
+                    gallery.appendChild(createItem(`images/wallpaper/${file}`, 'wallpaper'));
+                    count++;
+                });
+            }
+
+            if (filter === 'all' || filter === 'meme') {
+                memeFiles.forEach(file => {
+                    gallery.appendChild(createItem(`images/meme/${file}`, 'meme'));
+                    count++;
+                });
+            }
+
+            countEl.textContent = count;
+        }
+
+        // 绛涢€夋寜閽?        document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                const filter = btn.dataset.filter;
-                document.querySelectorAll('.item').forEach(item => {
-                    if (filter === 'all' || item.dataset.type === filter) {
-                        item.style.display = '';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
+                renderGallery(btn.dataset.category);
             });
         });
+
+        // 鍒濆鍖?        renderGallery();
     </script>
 </body>
 </html>
+
