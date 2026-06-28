@@ -22,14 +22,27 @@
     </div>
 
     <div class="masonry" id="gallery"></div>
+    <div id="loading" class="loading">加载中...</div>
+    <div id="loadMore" class="load-more" style="display:none;">
+        <button id="loadMoreBtn">加载更多</button>
+    </div>
 
     <footer>
-        <p>Total: <span id="count">0</span> items</p>
+        <p>Total: <span id="count">0</span> items | 已显示: <span id="shown">0</span></p>
     </footer>
 
     <script>
+        const BATCH_SIZE = 50;
         const gallery = document.getElementById('gallery');
         const countEl = document.getElementById('count');
+        const shownEl = document.getElementById('shown');
+        const loadingEl = document.getElementById('loading');
+        const loadMoreEl = document.getElementById('loadMore');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+
+        let currentFilter = 'all';
+        let displayedCount = 0;
+        let allItems = [];
 
         // 壁纸分类
         const categories = {
@@ -810,45 +823,62 @@
             'dynamic-test.gif'
         ];
 
-        function createItem(src, category) {
+        function getAllItems(filter) {
+            const items = [];
+            if (filter === 'all' || filter === 'wallpaper') {
+                for (const [name, files] of Object.entries(categories)) {
+                    files.forEach(file => {
+                        items.push({ src: `images/wallpaper/${file}`, category: 'wallpaper' });
+                    });
+                }
+            }
+            if (filter === 'all' || filter === 'meme-static') {
+                memeStaticFiles.forEach(file => {
+                    items.push({ src: `images/meme/${file}`, category: 'meme-static' });
+                });
+            }
+            if (filter === 'all' || filter === 'meme-dynamic') {
+                memeDynamicFiles.forEach(file => {
+                    items.push({ src: `images/meme/${file}`, category: 'meme-dynamic' });
+                });
+            }
+            return items;
+        }
+
+        function createItem(item) {
             const div = document.createElement('div');
             div.className = 'item';
-            div.dataset.category = category;
+            div.dataset.category = item.category;
             div.innerHTML = `
-                <img src="${src}" alt="${category}" loading="lazy">
-                <a href="${src}" download class="download-btn">下载</a>
+                <img src="${item.src}" alt="${item.category}" loading="lazy">
+                <a href="${item.src}" download class="download-btn">下载</a>
             `;
             return div;
         }
 
-        function renderGallery(filter = 'all') {
+        function renderBatch() {
+            const end = Math.min(displayedCount + BATCH_SIZE, allItems.length);
+            for (let i = displayedCount; i < end; i++) {
+                gallery.appendChild(createItem(allItems[i]));
+            }
+            displayedCount = end;
+            shownEl.textContent = displayedCount;
+
+            if (displayedCount >= allItems.length) {
+                loadMoreEl.style.display = 'none';
+            } else {
+                loadMoreEl.style.display = 'block';
+            }
+        }
+
+        function initGallery(filter) {
+            currentFilter = filter;
+            allItems = getAllItems(filter);
             gallery.innerHTML = '';
-            let count = 0;
-
-            if (filter === 'all' || filter === 'wallpaper') {
-                for (const [name, files] of Object.entries(categories)) {
-                    files.forEach(file => {
-                        gallery.appendChild(createItem(`images/wallpaper/${file}`, 'wallpaper'));
-                        count++;
-                    });
-                }
-            }
-
-            if (filter === 'all' || filter === 'meme-static') {
-                memeStaticFiles.forEach(file => {
-                    gallery.appendChild(createItem(`images/meme/${file}`, 'meme-static'));
-                    count++;
-                });
-            }
-
-            if (filter === 'all' || filter === 'meme-dynamic') {
-                memeDynamicFiles.forEach(file => {
-                    gallery.appendChild(createItem(`images/meme/${file}`, 'meme-dynamic'));
-                    count++;
-                });
-            }
-
-            countEl.textContent = count;
+            displayedCount = 0;
+            countEl.textContent = allItems.length;
+            loadingEl.style.display = 'none';
+            renderBatch();
         }
 
         // 筛选按钮
@@ -856,12 +886,17 @@
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                renderGallery(btn.dataset.category);
+                initGallery(btn.dataset.category);
             });
         });
 
+        // 加载更多按钮
+        loadMoreBtn.addEventListener('click', () => {
+            renderBatch();
+        });
+
         // 初始化
-        renderGallery();
+        initGallery('all');
     </script>
 </body>
 </html>

@@ -129,6 +129,33 @@ footer {
     font-size: 14px;
 }
 
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+}
+
+.load-more {
+    text-align: center;
+    padding: 20px;
+}
+
+.load-more button {
+    padding: 10px 30px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border: none;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.load-more button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(59, 130, 246, 0.4);
+}
+
 @media (max-width: 1200px) {
     .masonry { column-count: 3; }
 }
