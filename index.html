@@ -25,6 +25,10 @@
             <button class="filter-btn-sub" data-sub="static">静图</button>
             <button class="filter-btn-sub" data-sub="dynamic">动图</button>
         </div>
+        <div class="filters-sub" id="wallpaperFilters">
+            <button class="filter-btn-sub active" data-wsub="all">全部壁纸</button>
+            <button class="filter-btn-sub" data-wsub="pgr">战双帕米什</button>
+        </div>
     </div>
 
     <div class="masonry" id="gallery"></div>
@@ -45,9 +49,11 @@
         const loadMoreEl = document.getElementById('loadMore');
         const loadMoreBtn = document.getElementById('loadMoreBtn');
         const memeFiltersEl = document.getElementById('memeFilters');
+        const wallpaperFiltersEl = document.getElementById('wallpaperFilters');
 
         let currentMainFilter = 'all';
         let currentSubFilter = 'all';
+        let currentWallpaperSub = 'all';
         let displayedCount = 0;
         let allItems = [];
 
@@ -830,14 +836,16 @@
             'static-test.gif'
         ];
 
-        function getAllItems(mainFilter, subFilter) {
+        function getAllItems(mainFilter, subFilter, wallpaperSub) {
             const items = [];
 
             if (mainFilter === 'all' || mainFilter === 'wallpaper') {
                 for (const [name, files] of Object.entries(categories)) {
-                    files.forEach(file => {
-                        items.push({ src: `images/wallpaper/${file}`, category: 'wallpaper' });
-                    });
+                    if (wallpaperSub === 'all' || wallpaperSub === 'pgr') {
+                        files.forEach(file => {
+                            items.push({ src: `images/wallpaper/${file}`, category: 'wallpaper', sub: name });
+                        });
+                    }
                 }
             }
 
@@ -880,7 +888,7 @@
         }
 
         function initGallery() {
-            allItems = getAllItems(currentMainFilter, currentSubFilter);
+            allItems = getAllItems(currentMainFilter, currentSubFilter, currentWallpaperSub);
             gallery.innerHTML = '';
             displayedCount = 0;
             countEl.textContent = allItems.length;
@@ -894,23 +902,38 @@
                 btn.classList.add('active');
                 currentMainFilter = btn.dataset.category;
 
-                // 显示/隐藏表情子分类
+                // 显示/隐藏子分类
                 if (currentMainFilter === 'meme') {
                     memeFiltersEl.classList.add('show');
+                    wallpaperFiltersEl.classList.remove('show');
+                } else if (currentMainFilter === 'wallpaper') {
+                    wallpaperFiltersEl.classList.add('show');
+                    memeFiltersEl.classList.remove('show');
                 } else {
                     memeFiltersEl.classList.remove('show');
+                    wallpaperFiltersEl.classList.remove('show');
                 }
 
                 initGallery();
             });
         });
 
-        // 子分类按钮
-        document.querySelectorAll('.filter-btn-sub').forEach(btn => {
+        // 表情子分类按钮
+        document.querySelectorAll('#memeFilters .filter-btn-sub').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-btn-sub').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('#memeFilters .filter-btn-sub').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentSubFilter = btn.dataset.sub;
+                initGallery();
+            });
+        });
+
+        // 壁纸子分类按钮
+        document.querySelectorAll('#wallpaperFilters .filter-btn-sub').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#wallpaperFilters .filter-btn-sub').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentWallpaperSub = btn.dataset.wsub;
                 initGallery();
             });
         });
