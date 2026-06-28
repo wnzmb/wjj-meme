@@ -15,14 +15,20 @@
     </header>
 
     <div class="filters">
-        <button class="filter-btn active" data-category="all">全部</button>
-        <button class="filter-btn" data-category="wallpaper">壁纸</button>
-        <button class="filter-btn" data-category="meme-static">表情包(静图)</button>
-        <button class="filter-btn" data-category="meme-dynamic">表情包(动图)</button>
+        <div class="filters-main">
+            <button class="filter-btn active" data-category="all">全部</button>
+            <button class="filter-btn" data-category="wallpaper">壁纸</button>
+            <button class="filter-btn" data-category="meme">表情</button>
+        </div>
+        <div class="filters-sub" id="memeFilters">
+            <button class="filter-btn-sub active" data-sub="all">全部表情</button>
+            <button class="filter-btn-sub" data-sub="static">静图</button>
+            <button class="filter-btn-sub" data-sub="dynamic">动图</button>
+        </div>
     </div>
 
     <div class="masonry" id="gallery"></div>
-    <div id="loading" class="loading">加载中...</div>
+    <div id="loading" class="loading" style="display:none;">加载中...</div>
     <div id="loadMore" class="load-more" style="display:none;">
         <button id="loadMoreBtn">加载更多</button>
     </div>
@@ -36,11 +42,12 @@
         const gallery = document.getElementById('gallery');
         const countEl = document.getElementById('count');
         const shownEl = document.getElementById('shown');
-        const loadingEl = document.getElementById('loading');
         const loadMoreEl = document.getElementById('loadMore');
         const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const memeFiltersEl = document.getElementById('memeFilters');
 
-        let currentFilter = 'all';
+        let currentMainFilter = 'all';
+        let currentSubFilter = 'all';
         let displayedCount = 0;
         let allItems = [];
 
@@ -823,25 +830,30 @@
             'dynamic-test.gif'
         ];
 
-        function getAllItems(filter) {
+        function getAllItems(mainFilter, subFilter) {
             const items = [];
-            if (filter === 'all' || filter === 'wallpaper') {
+
+            if (mainFilter === 'all' || mainFilter === 'wallpaper') {
                 for (const [name, files] of Object.entries(categories)) {
                     files.forEach(file => {
                         items.push({ src: `images/wallpaper/${file}`, category: 'wallpaper' });
                     });
                 }
             }
-            if (filter === 'all' || filter === 'meme-static') {
-                memeStaticFiles.forEach(file => {
-                    items.push({ src: `images/meme/${file}`, category: 'meme-static' });
-                });
+
+            if (mainFilter === 'all' || mainFilter === 'meme') {
+                if (subFilter === 'all' || subFilter === 'static') {
+                    memeStaticFiles.forEach(file => {
+                        items.push({ src: `images/meme/${file}`, category: 'meme-static' });
+                    });
+                }
+                if (subFilter === 'all' || subFilter === 'dynamic') {
+                    memeDynamicFiles.forEach(file => {
+                        items.push({ src: `images/meme/${file}`, category: 'meme-dynamic' });
+                    });
+                }
             }
-            if (filter === 'all' || filter === 'meme-dynamic') {
-                memeDynamicFiles.forEach(file => {
-                    items.push({ src: `images/meme/${file}`, category: 'meme-dynamic' });
-                });
-            }
+
             return items;
         }
 
@@ -864,39 +876,50 @@
             displayedCount = end;
             shownEl.textContent = displayedCount;
 
-            if (displayedCount >= allItems.length) {
-                loadMoreEl.style.display = 'none';
-            } else {
-                loadMoreEl.style.display = 'block';
-            }
+            loadMoreEl.style.display = displayedCount >= allItems.length ? 'none' : 'block';
         }
 
-        function initGallery(filter) {
-            currentFilter = filter;
-            allItems = getAllItems(filter);
+        function initGallery() {
+            allItems = getAllItems(currentMainFilter, currentSubFilter);
             gallery.innerHTML = '';
             displayedCount = 0;
             countEl.textContent = allItems.length;
-            loadingEl.style.display = 'none';
             renderBatch();
         }
 
-        // 筛选按钮
+        // 主分类按钮
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                initGallery(btn.dataset.category);
+                currentMainFilter = btn.dataset.category;
+
+                // 显示/隐藏表情子分类
+                if (currentMainFilter === 'meme') {
+                    memeFiltersEl.classList.add('show');
+                } else {
+                    memeFiltersEl.classList.remove('show');
+                }
+
+                initGallery();
             });
         });
 
-        // 加载更多按钮
-        loadMoreBtn.addEventListener('click', () => {
-            renderBatch();
+        // 子分类按钮
+        document.querySelectorAll('.filter-btn-sub').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn-sub').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentSubFilter = btn.dataset.sub;
+                initGallery();
+            });
         });
 
+        // 加载更多
+        loadMoreBtn.addEventListener('click', renderBatch);
+
         // 初始化
-        initGallery('all');
+        initGallery();
     </script>
 </body>
 </html>
