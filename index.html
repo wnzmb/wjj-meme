@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meme Collection | WJJ</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="https://blog.wjjblog.ccwu.cc/favicon.svg">
+</head>
+<body>
+    <header>
+        <h1>Meme Collection</h1>
+        <p class="subtitle">WJJ 的表情包收集地</p>
+        <a href="https://wjjblog.ccwu.cc" class="back-link">← 返回主站</a>
+    </header>
+
+    <div class="masonry" id="gallery">
+        <!-- 在这里添加表情包，格式：<div class="item"><img src="images/文件名.jpg" alt="描述"></div> -->
+        <div class="item"><img src="images/example1.jpg" alt="表情包1"></div>
+        <div class="item"><img src="images/example2.jpg" alt="表情包2"></div>
+    </div>
+
+    <footer>
+        <p>Total: <span id="count">0</span> memes</p>
+    </footer>
+
+    <script>
+        document.getElementById('count').textContent = 
+            document.querySelectorAll('.item img').length;
+    </script>
+</body>
+</html>
