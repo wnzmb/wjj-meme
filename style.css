@@ -13,7 +13,7 @@ body {
 
 header {
     text-align: center;
-    padding: 60px 20px 40px;
+    padding: 60px 20px 20px;
 }
 
 h1 {
@@ -42,6 +42,35 @@ h1 {
     color: #60a5fa;
 }
 
+.filters {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 20px 0 30px;
+}
+
+.filter-btn {
+    padding: 8px 20px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 20px;
+    color: #888;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.filter-btn:hover {
+    border-color: #3b82f6;
+    color: #fff;
+}
+
+.filter-btn.active {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border-color: transparent;
+    color: #fff;
+}
+
 .masonry {
     column-count: 4;
     column-gap: 16px;
@@ -57,6 +86,7 @@ h1 {
     overflow: hidden;
     background: #111;
     transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
 }
 
 .item:hover {
@@ -68,6 +98,28 @@ h1 {
     width: 100%;
     display: block;
     cursor: pointer;
+}
+
+.download-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 6px 14px;
+    background: rgba(59, 130, 246, 0.9);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.item:hover .download-btn {
+    opacity: 1;
+}
+
+.download-btn:hover {
+    background: rgba(59, 130, 246, 1);
 }
 
 footer {

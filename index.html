@@ -14,10 +14,29 @@
         <a href="https://wjjblog.ccwu.cc" class="back-link">← 返回主站</a>
     </header>
 
+    <div class="filters">
+        <button class="filter-btn active" data-filter="all">全部</button>
+        <button class="filter-btn" data-filter="static">静态</button>
+        <button class="filter-btn" data-filter="gif">动图</button>
+    </div>
+
     <div class="masonry" id="gallery">
-        <!-- 在这里添加表情包，格式：<div class="item"><img src="images/文件名.jpg" alt="描述"></div> -->
-        <div class="item"><img src="images/example1.jpg" alt="表情包1"></div>
-        <div class="item"><img src="images/example2.jpg" alt="表情包2"></div>
+        <!-- 添加表情包格式：
+        静态图: <div class="item" data-type="static"><img src="images/文件.jpg" alt="描述"><a href="images/文件.jpg" download class="download-btn">下载</a></div>
+        动图: <div class="item" data-type="gif"><img src="images/文件.gif" alt="描述"><a href="images/文件.gif" download class="download-btn">下载</a></div>
+        -->
+        <div class="item" data-type="static">
+            <img src="images/meme1.jpg" alt="表情包1">
+            <a href="images/meme1.jpg" download class="download-btn">下载</a>
+        </div>
+        <div class="item" data-type="static">
+            <img src="images/meme2.jpg" alt="表情包2">
+            <a href="images/meme2.jpg" download class="download-btn">下载</a>
+        </div>
+        <div class="item" data-type="static">
+            <img src="images/meme3.jpg" alt="表情包3">
+            <a href="images/meme3.jpg" download class="download-btn">下载</a>
+        </div>
     </div>
 
     <footer>
@@ -27,6 +46,21 @@
     <script>
         document.getElementById('count').textContent = 
             document.querySelectorAll('.item img').length;
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const filter = btn.dataset.filter;
+                document.querySelectorAll('.item').forEach(item => {
+                    if (filter === 'all' || item.dataset.type === filter) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>
